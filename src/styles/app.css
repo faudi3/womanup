@@ -1,0 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  background-color: #272626;
+}
+h1 {
+  color: #88e65c;
+  text-align: center;
+  margin-top: 20px;
+}
+.wrap {
+  display: flex;
+  width: 90%;
+  margin: 20px auto;
+  border: 1px solid red;
+  justify-content: space-between;
+  color: white;
+}
+p {
+  margin-top: 20px;
+}
+/*# sourceMappingURL=app.css.map */
