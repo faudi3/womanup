@@ -124,10 +124,7 @@ function App() {
         title: inpTitle,
         text: inpText,
         date: inpDate,
-        file: "0",
       });
-      const desertRef = ref(storage, `${item.time}/a`);
-      await deleteObject(desertRef);
     }
     cancelChange();
   };
