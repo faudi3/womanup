@@ -1,6 +1,8 @@
 * {
   margin: 0;
   padding: 0;
+}
+body {
   background-color: #272626;
 }
 h1 {
@@ -12,11 +14,49 @@ h1 {
   display: flex;
   width: 90%;
   margin: 20px auto;
-  border: 1px solid red;
   justify-content: space-between;
   color: white;
 }
 p {
-  margin-top: 20px;
+  margin-top: 10px;
+}
+button {
+  border: 1px solid white;
+  color: white;
+  padding: 5px;
+  margin-top: 10px;
+  background-color: #000000;
+}
+input {
+  border: 1px solid white;
+  color: black;
+}
+.createTask {
+  display: flex;
+  flex-direction: column;
+}
+.right {
+  width: 45%;
+}
+.todo {
+  display: flex;
+  min-width: 300px;
+  flex-direction: column;
+  background-color: #ff8585;
+  margin: 20px 0;
+}
+.myimg {
+  width: auto;
+  height: 150px;
+}
+.done {
+  background-color: green;
+}
+span {
+  color: blue;
+  margin-left: 20px;
+}
+.over {
+  background-color: #94946f;
 }
 /*# sourceMappingURL=app.css.map */
