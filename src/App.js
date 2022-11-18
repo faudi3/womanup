@@ -243,10 +243,11 @@ function App() {
               {!edit && (
                 <button onClick={() => redactTask(item, i)}>Изменить</button>
               )}
-
-              <button onClick={() => taskDone(item, i)}>
-                {item.done === "1" ? "Невыполнено" : "Выполнить"}
-              </button>
+              {Date.now() < Date.parse(item.date) && (
+                <button onClick={() => taskDone(item, i)}>
+                  {item.done === "1" ? "Невыполнено" : "Выполнить"}
+                </button>
+              )}
 
               <button onClick={() => deleteTask(item)}>Удалить</button>
               {edit && (
