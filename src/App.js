@@ -63,7 +63,9 @@ function App() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
           const img = document.getElementById(`${a}`);
-          img.setAttribute("src", url);
+          if (img) {
+            img.setAttribute("src", url);
+          }
         });
       }
     );
@@ -106,9 +108,18 @@ function App() {
    * Изменяет заметку в Firebase Firestore
    * @param {object} item - объект заметки
    * */
-  const editTask = async (item, i) => {
+  const editTask = async (item) => {
+    let files = "0";
+    if (file !== "") {
+      files = "1";
+    }
     const noteRef = doc(db, "todos", `${item.time}`);
-    await updateDoc(noteRef, { title: inpTitle, text: inpText, date: inpDate });
+    await updateDoc(noteRef, {
+      title: inpTitle,
+      text: inpText,
+      date: inpDate,
+      file: files,
+    });
     if (file !== "") {
       await sendToFireb(item.time);
     }
@@ -128,8 +139,12 @@ function App() {
   const deleteFile = async (i) => {
     const desertRef = ref(storage, `${i}/a`);
     await deleteObject(desertRef);
+    await editTask(i);
     const img = document.getElementById(`${i}`);
-    img.setAttribute("src", "");
+    if (img) {
+      img.setAttribute("src", "");
+    }
+
     cancelChange();
   };
   /** useEffect для обновления списка заметок и Firestore в режиме realtime */
@@ -169,12 +184,18 @@ function App() {
   /** useEffect для для загрузки изображения к заметке при первом рендере */
   React.useEffect(() => {
     list.forEach((item) => {
-      getDownloadURL(ref(storage, `/${item.time}/a`)).then((url) => {
-        if (url) {
-          const img = document.getElementById(`${item.time}`);
-          img.setAttribute("src", url);
-        }
-      });
+      getDownloadURL(ref(storage, `/${item.time}/a`))
+        .then((url) => {
+          if (url) {
+            const img = document.getElementById(`${item.time}`);
+            if (img) {
+              img.setAttribute("src", url);
+            }
+          }
+        })
+        .catch(() => {
+          console.log("here");
+        });
     });
   });
   /** Функция обрабатыващая завершение заметки
