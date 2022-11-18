@@ -109,44 +109,39 @@ function App() {
    * @param {object} item - объект заметки
    * */
   const editTask = async (item) => {
-    let files = "0";
-    if (file !== "") {
-      files = "1";
-    }
-    const noteRef = doc(db, "todos", `${item.time}`);
-    await updateDoc(noteRef, {
-      title: inpTitle,
-      text: inpText,
-      date: inpDate,
-      file: files,
-    });
     if (file !== "") {
       await sendToFireb(item.time);
+      const noteRef = doc(db, "todos", `${item.time}`);
+      await updateDoc(noteRef, {
+        title: inpTitle,
+        text: inpText,
+        date: inpDate,
+        file: "1",
+      });
+    } else {
+      const noteRef = doc(db, "todos", `${item.time}`);
+      await updateDoc(noteRef, {
+        title: inpTitle,
+        text: inpText,
+        date: inpDate,
+        file: "0",
+      });
+      const desertRef = ref(storage, `${item.time}/a`);
+      await deleteObject(desertRef);
     }
     cancelChange();
   };
   /** Функция удаления заметки
-   * @param {number} i - id заметки
+   * @param {object} item - объект заметки
    * */
-  const deleteTask = async (i) => {
-    await deleteDoc(doc(db, "todos", `${i}`));
-    const desertRef = ref(storage, `${i}/a`);
-    await deleteObject(desertRef);
-  };
-  /** Функция удаления файла из Storage
-   * @param {number} i - id файла
-   * */
-  const deleteFile = async (i) => {
-    const desertRef = ref(storage, `${i}/a`);
-    await deleteObject(desertRef);
-    await editTask(i);
-    const img = document.getElementById(`${i}`);
-    if (img) {
-      img.setAttribute("src", "");
+  const deleteTask = async (item) => {
+    await deleteDoc(doc(db, "todos", `${item.time}`));
+    if (item.file === "1") {
+      const desertRef = ref(storage, `${item.time}/a`);
+      await deleteObject(desertRef);
     }
-
-    cancelChange();
   };
+
   /** useEffect для обновления списка заметок и Firestore в режиме realtime */
   React.useEffect(() => {
     onSnapshot(collection(db, "todos"), (snapshot) => {
@@ -184,18 +179,20 @@ function App() {
   /** useEffect для для загрузки изображения к заметке при первом рендере */
   React.useEffect(() => {
     list.forEach((item) => {
-      getDownloadURL(ref(storage, `/${item.time}/a`))
-        .then((url) => {
-          if (url) {
-            const img = document.getElementById(`${item.time}`);
-            if (img) {
-              img.setAttribute("src", url);
+      if (item.file === "1") {
+        getDownloadURL(ref(storage, `/${item.time}/a`))
+          .then((url) => {
+            if (url) {
+              const img = document.getElementById(`${item.time}`);
+              if (img) {
+                img.setAttribute("src", url);
+              }
             }
-          }
-        })
-        .catch(() => {
-          console.log("here");
-        });
+          })
+          .catch(() => {
+            console.log("here");
+          });
+      }
     });
   });
   /** Функция обрабатыващая завершение заметки
@@ -253,12 +250,8 @@ function App() {
               <button onClick={() => taskDone(item, i)}>
                 {item.done === "1" ? "Невыполнено" : "Выполнить"}
               </button>
-              {edit && (
-                <button onClick={() => deleteFile(item.time)}>
-                  Удалить файл
-                </button>
-              )}
-              <button onClick={() => deleteTask(item.time)}>Удалить</button>
+
+              <button onClick={() => deleteTask(item)}>Удалить</button>
               {edit && (
                 <button
                   className={"create"}
